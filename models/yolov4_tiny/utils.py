@@ -1,13 +1,25 @@
 import cv2
-from pathlib import Path
 import numpy as np
 
 
-# TODO Change name
-def read_and_preprocess_image(image_path: Path, out_size=(416, 416)) -> np.ndarray:
-    # Read image in BGR format, because person-detection-0200 takes input in BGR format
-    image = cv2.imread(filename=image_path.as_posix())
-    image = cv2.resize(image, dsize=out_size)
+# TODO Check yolov4-tiny input format
+def preprocess_image(image: np.ndarray) -> np.ndarray:
+    """
+    Image preprocessing before feeding it to a neural network.
 
-    #  Transpose and add new dimension to correcpond model input format (B, C, H, W)
+    Parameter
+    ---------
+    image : np.ndarray
+        Image in BGR format with shape of (height, width, channels).
+
+    Returns
+    -------
+    np.ndarray
+        Image for neural network in valid format:
+            * Color format: BGR 
+            * Image size: 416 x 416
+            * Output shape: (height, width, channels)
+    """
+
+    image = cv2.resize(image, dsize=(416, 416))
     return image
