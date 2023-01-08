@@ -7,6 +7,7 @@ CONFIDENCE_THRESHOLD = 0.5
 NMS_THRESHOLD = 0.5
 
 # TODO: Remove or rename accuracy='FP32', device: str='CPU'
+# TODO: Check input size
 class YoloV4Tiny:
     # MAKE proper name for "accuracy" and "device" variable
     def __init__(self, accuracy='FP32', device: str='CPU', input_size = (416, 416)) -> None:

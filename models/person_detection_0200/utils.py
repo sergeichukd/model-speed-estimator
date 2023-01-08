@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from entities.detection import Detect, BBox
+from typing import List, Tuple
 
 
 def preprocess_image(image: np.ndarray) -> np.ndarray:
@@ -23,3 +25,42 @@ def preprocess_image(image: np.ndarray) -> np.ndarray:
     image = cv2.resize(image, dsize=(256, 256))
     image = image.transpose(2, 0, 1)[np.newaxis, ...]
     return image
+
+
+def unify_prediction(predictions: np.ndarray, img_size: Tuple[int, int]) -> List[Detect]:
+    """
+    Convert model prediction to list of detections
+
+    Parameter
+    ---------
+    predictions : np.ndarray
+        Prediction of model for one image with shape: (1, 1, 200, 7) in the format (1, 1, N, 7),
+        where N is the number of detected bounding boxes. 
+        Each detection has the format [image_id, label, conf, x_min, y_min, x_max, y_max], where:
+            * image_id - ID of the image in the batch
+            * label - predicted class ID (0 - person)
+            * conf - confidence for the predicted class
+            * (x_min, y_min) - coordinates of the top left bounding box corner
+            * (x_max, y_max) - coordinates of the bottom right bounding box corner
+    
+    img_size : Tuple[int, int]
+        Image size: (height, width)
+
+    Returns
+    -------
+    List[Detect]
+        List of detections in unified format
+    """
+    conf_threshold = 0.5
+    detections = []
+    for detect in predictions.squeeze():
+        image_id, label, conf, x_min, y_min, x_max, y_max = detect
+
+        if conf > conf_threshold:
+            detections.append(Detect(
+                bbox=BBox(x_min, y_min, x_max, y_max),
+                conf=conf,
+                label=label,
+                class_name='Person'
+            ))
+    return detections
