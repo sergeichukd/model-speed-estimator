@@ -10,7 +10,7 @@ NMS_THRESHOLD = 0.5
 # TODO: Check input size
 class YoloV4Tiny:
     # MAKE proper name for "accuracy" and "device" variable
-    def __init__(self, accuracy='FP32', device: str='CPU', input_size = (416, 416)) -> None:
+    def __init__(self, accuracy='FP32', device: str='CPU', input_size = (416, 416), name='yolov4_tiny') -> None:
         weights_path = MODEL_DIR / 'yolov4-tiny.weights'
         config_path = MODEL_DIR / 'yolov4-tiny.cfg'
         net = cv2.dnn.readNet(weights_path.as_posix(), config_path.as_posix())
@@ -21,7 +21,8 @@ class YoloV4Tiny:
 
         self.model = cv2.dnn_DetectionModel(net)
         self.model.setInputParams(size=input_size, scale=1/255, swapRB=True) # TODO Разобраться со swapRB: это BGR или RGB в итоге?
-    
+        self.name = name
+
     def infer(self, image):
         """
         Return: classes, scores, boxes

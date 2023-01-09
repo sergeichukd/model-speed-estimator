@@ -1,9 +1,41 @@
-from typing import List, Tuple
-from entities.detection import Detect, BBox
+from typing import List, Tuple, Union
+from entities.detection import Detect
 import numpy as np
 import cv2
-from random import randint
+from pathlib import Path
 
+
+class VideoWriter:
+    def __init__(self, video_path: Union[Path, str], fps: float, frame_size: Tuple[int, int]) -> None: 
+        self.video_path = Path(video_path)
+        self.fps = fps
+        self.frame_size = frame_size
+        self.out_video = cv2.VideoWriter(filename=str(video_path), 
+                                         fourcc=cv2.VideoWriter_fourcc(*'FMP4'), 
+                                         fps=fps, 
+                                         frameSize=frame_size,
+                                         isColor=True)
+        print('Write video to:', self.video_path)
+
+    def write(self, img):
+        self.out_video.write(img)
+    
+    def close(self):
+        self.out_video.release()
+    
+class ImageWriter:
+    def __init__(self, save_path: Union[Path, str]):
+        self.save_path = Path(save_path)
+        self.image_counter = 0
+        print('Write images to:', self.save_path)
+    
+    def write(self, img: np.ndarray) -> None:
+        img_path = self.save_path / f'{self.image_counter}.jpg'
+        cv2.imwrite(str(img_path), img)
+        self.image_counter += 1
+    
+    def close(self):
+        pass
 
 def rel_to_abs_coordinates(x_min: float, y_min: float, x_max: float, y_max: float, img_size: Tuple[int, int]):
     """
@@ -56,6 +88,3 @@ def visualize_detections(img: np.ndarray, detections: List[Detect]) -> np.ndarra
                                 thickness=2)
         new_img = cv2.putText(new_img, text, top_left, cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
     return new_img
-
-def save_results():
-    pass

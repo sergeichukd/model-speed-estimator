@@ -45,12 +45,12 @@ class ImageReader:
     def __iter__(self):
         return self
     
-    def __next__(self) -> Tuple[str, np.ndarray, np.ndarray]:
+    def __next__(self) -> Tuple[np.ndarray, np.ndarray]:
         """Returns Tuple (image_path, original_image, preprocessed_image)
         """
         img_path = next(self.img_path_gen)
         image = cv2.imread(filename=img_path.as_posix())
-        return img_path, image, self.preprocess_image_fn(image)
+        return image, self.preprocess_image_fn(image)
 
 # TODO: describe, what video formats are supported
 # TODO Check wheather BGR format video capture return or not
@@ -98,12 +98,12 @@ class VideoReader:
         return self
     
     # Make right docstring
-    def __next__(self) -> Tuple[str, np.ndarray, np.ndarray]:
+    def __next__(self) -> Tuple[np.ndarray, np.ndarray]:
         """Returns Tuple (frame_number, original_frame, preprocessed_frame)
         """
         cap_success, frame = self.video_capture.read()
         self.frame_counter += 1
         if cap_success:
-            return str(self.frame_counter), frame, self.preprocess_frame_fn(frame)
+            return frame, self.preprocess_frame_fn(frame)
         self.video_capture.release()
         raise StopIteration()        
