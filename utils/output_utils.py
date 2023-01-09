@@ -5,6 +5,8 @@ import cv2
 from pathlib import Path
 
 
+OUTPUT_IMAGE_SIZE = (720, 720)
+
 class VideoWriter:
     def __init__(self, video_path: Union[Path, str], fps: float, frame_size: Tuple[int, int]) -> None: 
         self.video_path = Path(video_path)
@@ -69,7 +71,7 @@ def visualize_detections(img: np.ndarray, detections: List[Detect]) -> np.ndarra
     """
     img - image in BGR format
     """
-    output_imgage_size = (720, 720)
+    OUTPUT_IMAGE_SIZE = (720, 720)
     new_img = img.copy()
     # new_img = cv2.cvtColor(new_img, cv2.COLOR_BGR2RGB)
     for detection in detections:
@@ -77,10 +79,10 @@ def visualize_detections(img: np.ndarray, detections: List[Detect]) -> np.ndarra
                                                         detection.bbox.y_min, 
                                                         detection.bbox.x_max, 
                                                         detection.bbox.y_max, 
-                                                        img_size = output_imgage_size)
+                                                        img_size = OUTPUT_IMAGE_SIZE)
         color = (0,0,255) # Red in BGR
         text = f'{detection.class_name}: {detection.conf:.3f}'
-        new_img = cv2.resize(new_img, output_imgage_size)
+        new_img = cv2.resize(new_img, OUTPUT_IMAGE_SIZE)
         new_img = cv2.rectangle(new_img, 
                                 pt1=(top_left[0], top_left[1] + 5), 
                                 pt2=bottom_right, 
