@@ -4,7 +4,7 @@ The Model Speed Estimator can help you to estimate preprocess, inference and pos
 * images (.jpg, .jpeg)
 * videos (.mp4) 
 
-*NOTE: The Model Speed Estimator may to work fine with other formats of video and image but it's not a guarantee*
+*NOTE: The Model Speed Estimator may work fine with other formats of video and image but it's not a guarantee*
 # Prepare project directory
 1. Download test datasets [here](https://drive.google.com/file/d/1l7oX-q4zZMBRhpu2ayciQDFIpqzcLZ0r/view?usp=sharing)
 1. Unzip datasets in a way to get such structure:

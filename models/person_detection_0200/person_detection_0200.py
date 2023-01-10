@@ -10,7 +10,6 @@ from models.abstract_model import Model
 MODEL_DIR = Path('vendor/models/intel/person-detection-0200')
 
 class PersonDetection0200(Model):
-    # MAKE proper name for "accuracy" and "device" variable
     def __init__(self, 
                  accuracy: str='FP32', 
                  device: str='CPU', 

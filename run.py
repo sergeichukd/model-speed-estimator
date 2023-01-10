@@ -1,29 +1,19 @@
+import time
+import distutils.dir_util
 from pathlib import Path
 from tqdm import tqdm
-import time
 from typing import Union
-import distutils.dir_util
-import argparse
 
-from utils.input_utils import ImageReader, VideoReader
 from models.abstract_model import Model
 from models.person_detection_0200 import PersonDetection0200
 from models.yolov4_tiny import YoloV4Tiny
+from utils.input_utils import ImageReader, VideoReader
+from utils.cli_utils import parse_args
 from utils.output_utils import visualize_detections, \
     ImageWriter, VideoWriter, Timings, print_timing_table, OUTPUT_IMAGE_SIZE
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Model Speed Estimator")
-    parser.add_argument(
-        "--video-path", help="Path to test video",
-        default=None, required=False)
-    parser.add_argument(
-        "--img-dir-path", help="Path to directory with test images",
-        default=None, required=False)
-    return parser.parse_args()
-
-def estimate_model(model:Model,
+def estimate_model(model: Model,
                    data_path: Union[Path, str],
                    results_path: Union[Path, str],
                    is_process_video: bool):
@@ -67,7 +57,7 @@ def estimate_model(model:Model,
 
 def main():
     args = parse_args()
-    assert args.video_path != args.img_dir_path, f'You should set up whether video path or image dir path'
+    assert bool(args.video_path) != bool(args.img_dir_path), f'You should set up whether video path or image dir path'
     data_path = Path(args.video_path or args.img_dir_path)
     is_process_video = bool(args.video_path)
 

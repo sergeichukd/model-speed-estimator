@@ -9,6 +9,7 @@ from models.abstract_model import Model
 
 
 MODEL_DIR = Path('vendor/models/yolov4-tiny')
+CLASS_NAMES_FILE_PATH = Path('models/yolov4_tiny/coco-classes.txt')
 
 class YoloV4Tiny(Model):
     def __init__(self, 
@@ -93,8 +94,7 @@ class YoloV4Tiny(Model):
         List[Detect]
             List of detections in unified format
         """
-        class_names = []
-        with open("models/yolov4_tiny/coco-classes.txt", "r") as f:
+        with open(CLASS_NAMES_FILE_PATH, "r") as f:
             class_names = [cname.strip() for cname in f.readlines()]
         
         detections = []

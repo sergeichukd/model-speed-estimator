@@ -35,7 +35,7 @@ class ImageWriter:
     
     def write(self, img: np.ndarray) -> None:
         img_path = self.save_path / f'{self.image_counter}.jpg'
-        cv2.imwrite(str(img_path), img)
+        cv2.imwrite(img_path.as_posix(), img)
         self.image_counter += 1
     
     def close(self):
@@ -116,7 +116,7 @@ def tlwh_to_tlbr(x_min, y_min, w, h):
 
 def visualize_detections(img: np.ndarray, detections: List[Detect]) -> np.ndarray:
     """
-    Convert relative to absolute rectangle coordinates        
+    Draw bbox and add text with class name and confidence     
     Parameter
     -------
     img : np.ndarray
@@ -128,11 +128,9 @@ def visualize_detections(img: np.ndarray, detections: List[Detect]) -> np.ndarra
     Returns
     -------
     np.ndarray
-        Image with visualuzed detection, class name and confidence. Shape: (height, width, channels)
+        Reshaped image with visualuzed detection, class name and confidence. Shape: (height, width, channels)
     """
-    OUTPUT_IMAGE_SIZE = (720, 720)
     new_img = img.copy()
-    # new_img = cv2.cvtColor(new_img, cv2.COLOR_BGR2RGB)
     for detection in detections:
         top_left, bottom_right = rel_to_abs_coordinates(detection.bbox.x_min, 
                                                         detection.bbox.y_min, 
@@ -141,13 +139,20 @@ def visualize_detections(img: np.ndarray, detections: List[Detect]) -> np.ndarra
                                                         img_size = OUTPUT_IMAGE_SIZE)
         color = (0,0,255) # Red in BGR
         text = f'{detection.class_name}: {detection.conf:.3f}'
+        text_shift = 5
         new_img = cv2.resize(new_img, OUTPUT_IMAGE_SIZE)
         new_img = cv2.rectangle(new_img, 
-                                pt1=(top_left[0], top_left[1] + 5), 
+                                pt1=top_left, 
                                 pt2=bottom_right, 
                                 color=color, 
                                 thickness=2)
-        new_img = cv2.putText(new_img, text, top_left, cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+        new_img = cv2.putText(img=new_img, 
+                              text=text, 
+                              org=(top_left[0], top_left[1] - text_shift), 
+                              fontFace=cv2.FONT_HERSHEY_SIMPLEX, 
+                              fontScale=0.6, 
+                              color=color, 
+                              thickness=2)
     return new_img
 
 
@@ -155,7 +160,7 @@ def print_timing_table(timings: Timings, images_count: int, model_name : str) ->
     timing_table = tabulate([
         ['-',                'Time per image, sec',                       'Total time, sec',             'Percents, %'],
         ['Preprocess time',   timings.preprocess_time / images_count,      timings.preprocess_time,       round(timings.percents()[0] * 100)],
-        ['Imference time',    timings.inference_time / images_count,       timings.inference_time,        round(timings.percents()[1] * 100)],
+        ['Inference time',    timings.inference_time / images_count,       timings.inference_time,        round(timings.percents()[1] * 100)],
         ['Postprocess time',  timings.postprocess_time / images_count,     timings.postprocess_time,      round(timings.percents()[2] * 100)],
         ['Total time',        timings.total_time() / images_count,         timings.total_time(),         '100'],
     ], headers='firstrow', tablefmt='fancy_grid')

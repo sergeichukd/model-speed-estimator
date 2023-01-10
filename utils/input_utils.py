@@ -8,8 +8,7 @@ class ImageReader:
     """Iterate over all images (.jpg or .jpeg) in folder and return original image
         NOTE: The ImageReader may work fine with other formats of images but it's not a guarantee
     """
-    def __init__(self, 
-                 folder_path: Union[Path, str]) -> None:
+    def __init__(self, folder_path: Union[Path, str]) -> None:
         """
         Parameter
         ---------
@@ -42,7 +41,7 @@ class ImageReader:
 
 class VideoReader:
     """Iterate over video (.mp4) and return original frames
-        NOTE: The VideoReader may to work fine with other formats of video but it's not a guarantee
+        NOTE: The VideoReader may work fine with other formats of video but it's not a guarantee
     """
     def __init__(self, 
                  video_path: Union[Path, str]) -> None:
@@ -61,7 +60,6 @@ class VideoReader:
         self.fps = int(self.video_capture.get(cv2.CAP_PROP_FPS))
         self.frame_width = int(self.video_capture.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.frame_height = int(self.video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.frame_counter = -1
 
     def __len__(self):
         return self.total_frames
@@ -77,7 +75,6 @@ class VideoReader:
             Frame in BGR format from video stream with shape of (height, width, channels)
         """
         cap_success, frame = self.video_capture.read()
-        self.frame_counter += 1
         if cap_success:
             return frame
         self.video_capture.release()
