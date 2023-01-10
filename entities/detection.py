@@ -12,6 +12,8 @@ class BBox:
 
 @dataclass
 class Detect:
+    """Unified detection
+    """
     bbox: BBox
     conf: float
     label: int

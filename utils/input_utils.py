@@ -1,13 +1,12 @@
 from pathlib import Path
-from typing import Union, Callable, Tuple
+from typing import Union
 import numpy as np
 import cv2
 
 
-# TODO: check that path is valid
-# TODO: describe, what image formats are supported
 class ImageReader:
-    """Iterate over all images in folder and return original and preprocessed images as input of a neural network.
+    """Iterate over all images (.jpg or .jpeg) in folder and return original image
+        NOTE: The ImageReader may work fine with other formats of images but it's not a guarantee
     """
     def __init__(self, 
                  folder_path: Union[Path, str]) -> None:
@@ -15,12 +14,7 @@ class ImageReader:
         Parameter
         ---------
         folder_path : Union[Path, str]
-            Path to folder with images.
-                
-        Returns
-        -------
-        np.ndarray
-            Raw image in BGR format
+            Path to folder with images
         """
         folder_path = Path(folder_path)
         assert folder_path.is_dir(), f'No such dir: {folder_path}'
@@ -36,16 +30,19 @@ class ImageReader:
         return self
     
     def __next__(self) -> np.ndarray:
-        """Returns Tuple (image_path, original_image, preprocessed_image)
+        """        
+        Returns
+        -------
+        np.ndarray
+            Raw image in BGR format with shape of (height, width, channels)
         """
         img_path = next(self.img_path_gen)
         image = cv2.imread(filename=img_path.as_posix())
         return image
 
-# TODO: describe, what video formats are supported
-# TODO Check wheather BGR format video capture return or not
 class VideoReader:
-    """Iterate over video and return original and preprocessed frames as input of a neural network.
+    """Iterate over video (.mp4) and return original frames
+        NOTE: The VideoReader may to work fine with other formats of video but it's not a guarantee
     """
     def __init__(self, 
                  video_path: Union[Path, str]) -> None:
@@ -53,12 +50,7 @@ class VideoReader:
         Parameter
         ---------
         video_path : Union[Path, str]
-            Path to video.
-                
-            Returns
-            -------
-            np.ndarray
-                Frame in BGR format from video stream
+            Path to video
         """
         video_path = Path(video_path)
         assert video_path.is_file(), f'No such file: {video_path}'
@@ -77,9 +69,12 @@ class VideoReader:
     def __iter__(self):
         return self
     
-    # Make right docstring
     def __next__(self) -> np.ndarray:
-        """Returns Tuple (frame_number, original_frame, preprocessed_frame)
+        """
+        Returns
+        -------
+        np.ndarray
+            Frame in BGR format from video stream with shape of (height, width, channels)
         """
         cap_success, frame = self.video_capture.read()
         self.frame_counter += 1

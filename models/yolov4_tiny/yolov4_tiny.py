@@ -5,43 +5,52 @@ import numpy as np
 from typing import Tuple
 from entities.detection import Detect, BBox
 from utils.output_utils import tlwh_to_tlbr, abs_to_rel_coordinates
+from models.abstract_model import Model
 
 
 MODEL_DIR = Path('vendor/models/yolov4-tiny')
 
-# TODO: Remove or rename accuracy='FP32', device: str='CPU'
-# TODO: Check input size
-class YoloV4Tiny:
-    # MAKE proper name for "accuracy" and "device" variable
+class YoloV4Tiny(Model):
     def __init__(self, 
-                 accuracy='FP32', 
-                 device: str='CPU', 
                  input_size = (416, 416), 
                  name='yolov4_tiny', 
                  confidence_threshold=0.5, 
                  nms_threshold=0.5) -> None:
+        super().__init__()
+
         weights_path = MODEL_DIR / 'yolov4-tiny.weights'
         config_path = MODEL_DIR / 'yolov4-tiny.cfg'
         net = cv2.dnn.readNet(weights_path.as_posix(), config_path.as_posix())
         
-        # TODO: Разобраться с setPreferableBackend и setPreferableTarget (FP32 or FP16)
-        # net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CPU)
         net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
         self.model = cv2.dnn_DetectionModel(net)
-        self.model.setInputParams(size=input_size, scale=1/255, swapRB=True) # TODO Разобраться со swapRB: это BGR или RGB в итоге?
+        self.model.setInputParams(size=input_size, scale=1/255, swapRB=True)
         self.name = name
         self.confidence_threshold = confidence_threshold
         self.nms_threshold = nms_threshold
 
-    def infer(self, image):
+    def infer(self, image: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
-        Return: classes, scores, boxes
+        Make prediction
+        Parameter
+        ---------
+        image : np.ndarray
+            Imput image for neural network in valid format:
+                * Color format: BGR 
+                * Image size: 416 x 416
+                * Shape: (height, width, channels)
+        Returns
+        -------
+        Tuple[np.ndarray, np.ndarray, np.ndarray]
+            Prediction of model for one image as tuple of np.ndarrays: (labels, scores, bboxes), where:
+                * labels : np.ndarray with shape (num_of_bboxes) - Labels of predicted bboxes
+                * scores : np.ndarray with shape (num_of_bboxes) - Scores of predicted bboxes
+                * bboxes : np.ndarray with shape (num_of_bboxes, 4) - Bboxes with coordinates (x_min, y_min, width, height)
         """
         classes, scores, boxes = self.model.detect(image, self.confidence_threshold, self.nms_threshold)
         return classes, scores, boxes
 
-    # TODO Check yolov4-tiny input format
     def preprocess_image(self, image: np.ndarray) -> np.ndarray:
         """
         Image preprocessing before feeding it to a neural network.

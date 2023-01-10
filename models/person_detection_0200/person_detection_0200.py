@@ -4,17 +4,20 @@ import cv2
 import numpy as np
 from entities.detection import Detect, BBox
 from typing import List, Tuple
+from models.abstract_model import Model
 
 
 MODEL_DIR = Path('vendor/models/intel/person-detection-0200')
 
-class PersonDetection0200:
+class PersonDetection0200(Model):
     # MAKE proper name for "accuracy" and "device" variable
     def __init__(self, 
-                 accuracy='FP32', 
+                 accuracy: str='FP32', 
                  device: str='CPU', 
-                 name='person_detection_0200', 
-                 confidence_threshold = 0.5) -> None:
+                 name: str ='person_detection_0200', 
+                 confidence_threshold: float = 0.5) -> None:
+        super().__init__()
+
         ie = Core()
         model_path = MODEL_DIR / accuracy / 'person-detection-0200.xml'
         self.model = ie.read_model(model=model_path.as_posix())
@@ -22,10 +25,33 @@ class PersonDetection0200:
         self.output_layer = self.compiled_model.output(0)
         self.name = name
         self.confidence_threshold = confidence_threshold
-        self.model_der = MODEL_DIR
+        self.model_dir = MODEL_DIR
 
     
-    def infer(self, image):
+    def infer(self, image: np.ndarray) -> np.ndarray:
+        """
+        Make predictions
+
+        Parameter
+        ---------
+        image : np.ndarray
+            Input image for neural network in valid format:
+                * Color format: BGR
+                * Image size: 256 x 256
+                * Shape: (batch_size = 1, channels, height, width)
+
+        Returns
+        -------
+        np.ndarray
+        Prediction of model for one image with shape: (1, 1, 200, 7) in the format (1, 1, N, 7),
+        where N is the number of detected bounding boxes. 
+        Each detection has the format [image_id, label, conf, x_min, y_min, x_max, y_max], where:
+            * image_id - ID of the image in the batch
+            * label - predicted class ID (0 - person)
+            * conf - confidence for the predicted class
+            * (x_min, y_min) - coordinates of the top left bounding box corner
+            * (x_max, y_max) - coordinates of the bottom right bounding box corner
+        """
         return self.compiled_model([image])[self.output_layer]
 
     def preprocess_image(self, image: np.ndarray) -> np.ndarray:

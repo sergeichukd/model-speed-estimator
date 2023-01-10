@@ -1,4 +1,5 @@
-# TODO Terminate script if error
+# exit when any command fails
+set -e
 
 omz_downloader --output_dir vendor/models --name person-detection-0200
 
