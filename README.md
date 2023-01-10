@@ -34,6 +34,7 @@ The Model Speed Estimator can help you to estimate preprocess, inference and pos
 ```bash
 poetry install
 poetry shell
+./download_models.sh
 ```
 
 # Run demo
