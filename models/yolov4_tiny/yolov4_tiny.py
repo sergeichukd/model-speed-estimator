@@ -22,6 +22,7 @@ class YoloV4Tiny(Model):
         config_path = MODEL_DIR / 'yolov4-tiny.cfg'
         net = cv2.dnn.readNet(weights_path.as_posix(), config_path.as_posix())
         
+        # For CPU device: FP32 is used
         net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
         self.model = cv2.dnn_DetectionModel(net)
