@@ -5,7 +5,7 @@ description = "Model inference speed estimator"
 authors = ["Dmitrii Sergeichuk <sergeychukdmitry@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
+python = ">=3.8,<3.9"
 opencv-python = "^4.6.0"
 tqdm = "^4.64.0"
 numpy = "^1.23.3"
