@@ -32,6 +32,9 @@ The Model Speed Estimator can help you to estimate preprocess, inference and pos
 
 # Install and setup environment
 ```bash
+# Use python 3.8
+python -m venv .venv
+source .venv/bin/activate
 poetry install
 poetry shell
 ./download_models.sh
