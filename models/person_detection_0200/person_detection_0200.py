@@ -20,7 +20,11 @@ class PersonDetection0200(Model):
         ie = Core()
         model_path = MODEL_DIR / accuracy / 'person-detection-0200.xml'
         self.model = ie.read_model(model=model_path.as_posix())
-        self.compiled_model = ie.compile_model(model=self.model, device_name=device.upper())
+        self.compiled_model = ie.compile_model(
+            model=self.model, 
+            device_name=device.upper(),
+            config={'PERFORMANCE_HINT': 'THROUGHPUT'},
+        )
         self.output_layer = self.compiled_model.output(0)
         self.name = name
         self.confidence_threshold = confidence_threshold
